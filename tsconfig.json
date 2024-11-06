@@ -19,7 +19,8 @@
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/types/*": ["types/*"],
-      "@/auth/*": ["auth/*"]
+      "@/auth/*": ["auth/*"],
+      "@/tailwind.config": ["../tailwind.config.js"] 
     },
     "plugins": [
       {
