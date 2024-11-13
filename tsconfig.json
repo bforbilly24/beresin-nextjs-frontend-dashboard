@@ -20,10 +20,9 @@
 			"@/constants/*": ["constants/*"],
 			"@/hooks/*": ["hooks/*"],
 			"@/libs/*": ["libs/*"],
+			"@/utils/*": ["utils/*"],
 			"@/types/*": ["types/*"],
 			"@/actions/*": ["actions/*"],
-			"@/auth": ["auth"],
-			"@/auth.config": ["auth.config"],
 			"@/tailwind.config": ["../tailwind.config.js"]
 		},
 		"plugins": [
