@@ -9,7 +9,7 @@ import { searchParams } from '@/lib/searchparams';
 
 export const ROLE_OPTIONS = [
 	{ value: 'admin', label: 'Admin' },
-	{ value: 'user', label: 'User' },
+	{ value: 'User', label: 'User' },
 ];
 
 export const SORT_OPTIONS = [
