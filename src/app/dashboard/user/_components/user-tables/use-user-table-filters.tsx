@@ -7,7 +7,7 @@ import { searchParams } from '@/lib/searchparams';
 
 export const ROLE_OPTIONS = [
 	{ value: 'admin', label: 'Admin' },
-	{ value: 'user', label: 'User' },
+	{ value: 'User', label: 'User' },
 ];
 
 export const SORT_OPTIONS = [
@@ -18,9 +18,9 @@ export const SORT_OPTIONS = [
 export function useUserTableFilters() {
 	const [searchQuery, setSearchQuery] = useQueryState('q', searchParams.q.withOptions({ shallow: false, throttleMs: 1000 }).withDefault(''));
 	const [roleFilter, setRoleFilter] = useQueryState('role', searchParams.role.withOptions({ shallow: false }).withDefault(''));
-	const [sortById, setSortById] = useQueryState('sortById', searchParams.sortById.withOptions({ shallow: false }).withDefault('desc'));
+	const [sortById, setSortById] = useQueryState('sortById', searchParams.sortById.withOptions({ shallow: false }).withDefault('asc'));
 	const [page, setPage] = useQueryState('page', searchParams.page.withDefault(1));
-	const [pageSize, setPageSize] = useQueryState('limit', searchParams.limit.withDefault(10)); // Add pageSize and setPageSize
+	const [pageSize, setPageSize] = useQueryState('limit', searchParams.limit.withDefault(10));
 
 	const resetFilters = useCallback(() => {
 		setSearchQuery(null);
@@ -30,7 +30,7 @@ export function useUserTableFilters() {
 		setPageSize(10);
 	}, [setSearchQuery, setRoleFilter, setSortById, setPage, setPageSize]);
 
-	const isAnyFilterActive = useMemo(() => !!searchQuery || !!roleFilter || sortById !== 'desc', [searchQuery, roleFilter, sortById]);
+	const isAnyFilterActive = useMemo(() => !!searchQuery || !!roleFilter || sortById !== 'asc', [searchQuery, roleFilter, sortById]);
 
 	return {
 		searchQuery,
