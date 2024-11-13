@@ -16,10 +16,10 @@ export const columns: ColumnDef<DataUser>[] = [
 	},
 	{
 		accessorKey: 'username',
-		header: 'Username', 
+		header: 'Username',
 	},
 	{
-		accessorKey: 'name', 
+		accessorKey: 'name',
 		header: 'Name',
 	},
 	{
@@ -31,11 +31,12 @@ export const columns: ColumnDef<DataUser>[] = [
 		header: 'Phone',
 	},
 	{
-		accessorKey: 'role', 
+		accessorKey: 'role',
 		header: 'Role',
 	},
 	{
 		id: 'actions',
+		header: 'Action',
 		cell: ({ row }) => <CellAction data={row.original} />, // Passing DataUser type
 	},
 ];
