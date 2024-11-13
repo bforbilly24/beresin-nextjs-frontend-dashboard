@@ -5,20 +5,20 @@ import { DataTable } from '@/components/ui/table/data-table';
 import { DataTableFilterBox } from '@/components/ui/table/data-table-filter-box';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
-import { DataUser } from '@/constants/data';
+import { DataUser } from '@/types/data-user';
 import { columns } from './columns';
 import { ROLE_OPTIONS, SORT_OPTIONS, useUserTableFilters } from './use-user-table-filters';
 
 export default function UserTable({ data, totalData }: { data: DataUser[]; totalData: number }) {
-	const { roleFilter, setRoleFilter, sortById, setSortById, isAnyFilterActive, resetFilters, searchQuery, setPage, setSearchQuery } = useUserTableFilters();
+	const { roleFilter, setRoleFilter, sortById, setSortById, isAnyFilterActive, resetFilters, searchQuery, setPage, setSearchQuery, page, pageSize, setPageSize } = useUserTableFilters();
 
-    const filteredData = data
-		.filter((user) => {
-			const matchesRole = !roleFilter || user.role === roleFilter;
-			const matchesSearch = !searchQuery || user.name.toLowerCase().includes(searchQuery.toLowerCase());
-			return matchesRole && matchesSearch;
-		})
+	const filteredData = data
+		.filter((user) => !roleFilter || user.role === roleFilter)
+		.filter((user) => !searchQuery || user.name.toLowerCase().includes(searchQuery.toLowerCase()))
 		.sort((a, b) => (sortById === 'asc' ? a.id - b.id : b.id - a.id));
+
+	const totalFilteredData = filteredData.length;
+	const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize);
 
 	return (
 		<div className='space-y-4'>
@@ -28,7 +28,8 @@ export default function UserTable({ data, totalData }: { data: DataUser[]; total
 				<DataTableFilterBox filterKey='sortById' title='Sort by ID' options={SORT_OPTIONS} setFilterValue={setSortById} filterValue={sortById} />
 				<DataTableResetFilter isFilterActive={isAnyFilterActive} onReset={resetFilters} />
 			</div>
-			<DataTable columns={columns} data={filteredData} totalItems={totalData} />
+
+			<DataTable columns={columns} data={paginatedData} totalItems={totalFilteredData} />
 		</div>
 	);
 }
