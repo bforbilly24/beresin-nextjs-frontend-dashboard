@@ -10,7 +10,7 @@ import { columns } from './columns';
 import { ROLE_OPTIONS, SORT_OPTIONS, useUserTableFilters } from './use-user-table-filters';
 
 export default function UserTable({ data, totalData }: { data: DataUser[]; totalData: number }) {
-	const { roleFilter, setRoleFilter, sortById, setSortById, isAnyFilterActive, resetFilters, searchQuery, setPage, setSearchQuery, page, pageSize, setPageSize } = useUserTableFilters();
+	const { roleFilter, setRoleFilter, sortById, setSortById, isAnyFilterActive, resetFilters, searchQuery, setPage, setSearchQuery, page, pageSize } = useUserTableFilters();
 
 	const filteredData = data
 		.filter((user) => !roleFilter || user.role === roleFilter)
