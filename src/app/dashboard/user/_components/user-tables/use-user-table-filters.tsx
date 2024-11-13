@@ -7,7 +7,7 @@ import { searchParams } from '@/lib/searchparams';
 
 export const ROLE_OPTIONS = [
 	{ value: 'admin', label: 'Admin' },
-	{ value: 'User', label: 'User' },
+	{ value: 'user', label: 'User' },
 ];
 
 export const SORT_OPTIONS = [
@@ -20,13 +20,15 @@ export function useUserTableFilters() {
 	const [roleFilter, setRoleFilter] = useQueryState('role', searchParams.role.withOptions({ shallow: false }).withDefault(''));
 	const [sortById, setSortById] = useQueryState('sortById', searchParams.sortById.withOptions({ shallow: false }).withDefault('desc'));
 	const [page, setPage] = useQueryState('page', searchParams.page.withDefault(1));
+	const [pageSize, setPageSize] = useQueryState('limit', searchParams.limit.withDefault(10)); // Add pageSize and setPageSize
 
 	const resetFilters = useCallback(() => {
 		setSearchQuery(null);
 		setRoleFilter(null);
-		setSortById('desc'); // Reset sorting to default
+		setSortById('desc');
 		setPage(1);
-	}, [setSearchQuery, setRoleFilter, setSortById, setPage]);
+		setPageSize(10);
+	}, [setSearchQuery, setRoleFilter, setSortById, setPage, setPageSize]);
 
 	const isAnyFilterActive = useMemo(() => !!searchQuery || !!roleFilter || sortById !== 'desc', [searchQuery, roleFilter, sortById]);
 
@@ -39,6 +41,8 @@ export function useUserTableFilters() {
 		setSortById,
 		page,
 		setPage,
+		pageSize, 
+		setPageSize,
 		resetFilters,
 		isAnyFilterActive,
 	};
