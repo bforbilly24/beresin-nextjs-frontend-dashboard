@@ -5,8 +5,6 @@ import { useQueryState } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 import { searchParams } from '@/lib/searchparams';
 
-// src/app/dashboard/user/_components/user-tables/use-user-table-filters.tsx
-
 export const ROLE_OPTIONS = [
 	{ value: 'admin', label: 'Admin' },
 	{ value: 'User', label: 'User' },
