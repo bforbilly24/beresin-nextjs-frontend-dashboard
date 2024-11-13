@@ -9,13 +9,16 @@ import { DataUser } from '@/constants/data';
 import { columns } from './columns';
 import { ROLE_OPTIONS, SORT_OPTIONS, useUserTableFilters } from './use-user-table-filters';
 
-// src/app/dashboard/user/_components/user-tables/index.tsx
-
 export default function UserTable({ data, totalData }: { data: DataUser[]; totalData: number }) {
 	const { roleFilter, setRoleFilter, sortById, setSortById, isAnyFilterActive, resetFilters, searchQuery, setPage, setSearchQuery } = useUserTableFilters();
 
-	// Filter by role and sort by ID based on selected options
-	const filteredData = data.filter((user) => !roleFilter || user.role === roleFilter).sort((a, b) => (sortById === 'asc' ? a.id - b.id : b.id - a.id));
+    const filteredData = data
+		.filter((user) => {
+			const matchesRole = !roleFilter || user.role === roleFilter;
+			const matchesSearch = !searchQuery || user.name.toLowerCase().includes(searchQuery.toLowerCase());
+			return matchesRole && matchesSearch;
+		})
+		.sort((a, b) => (sortById === 'asc' ? a.id - b.id : b.id - a.id));
 
 	return (
 		<div className='space-y-4'>
