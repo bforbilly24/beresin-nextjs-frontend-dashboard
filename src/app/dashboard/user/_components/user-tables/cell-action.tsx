@@ -21,6 +21,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const router = useRouter();
 	const { data: session } = useSession();
 
+	const handleEdit = () => {
+		router.push(`/dashboard/user/${data.id}`);
+	};
+
 	const onConfirm = async () => {
 		setLoading(true);
 		const token = session?.accessToken;
@@ -65,9 +69,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 				<DropdownMenuContent align='end'>
 					<DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-					<DropdownMenuItem onClick={() => router.push(`/dashboard/user/${data.id}`)}>
-						<Edit className='mr-2 h-4 w-4' /> Update
-					</DropdownMenuItem>
+					<DropdownMenuItem onClick={handleEdit}>
+					<Edit className='mr-2 h-4 w-4' /> Update
+				</DropdownMenuItem>
 					<DropdownMenuItem onClick={() => setOpen(true)}>
 						<Trash className='mr-2 h-4 w-4' /> Delete
 					</DropdownMenuItem>
