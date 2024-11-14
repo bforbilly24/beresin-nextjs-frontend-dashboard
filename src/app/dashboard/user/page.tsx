@@ -1,24 +1,17 @@
-// src/app/dashboard/user/page.tsx
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { SearchParams } from 'nuqs/parsers';
-import React from 'react';
 import { getUsers } from '@/actions/user/get-user';
-import { searchParamsCache } from '@/lib/searchparams';
+import UserListingPage from '@/app/dashboard/user/_components/user-listing-page';
+import { DataUser } from '@/constants/data';
 import authConfig from '@/utils/auth.config';
-import UserListingPage from './_components/user-listing-page';
+import { Metadata } from 'next';
 
-// Import the getUsers function
-
-type pageProps = {
-	searchParams: SearchParams;
+export const metadata: Metadata = {
+	title: 'Dashboard : User',
+	description: 'Welcome to BeresIn Dashboard',
 };
 
-export const metadata = {
-	title: 'Dashboard : Users',
-};
-
-export default async function Page({ searchParams }: pageProps) {
+export default async function UserPage() {
 	const session = await getServerSession(authConfig);
 
 	if (!session) {
@@ -26,11 +19,11 @@ export default async function Page({ searchParams }: pageProps) {
 		return null;
 	}
 
-	// Fetch users using the session token
-	const users = await getUsers(session.accessToken || '');
-
-	// Allow nested RSCs to access the search params (in a type-safe way)
-	searchParamsCache.parse(searchParams);
+	let users: DataUser[] = [];
+	if (session.accessToken) {
+		const data = await getUsers(session.accessToken);
+		users = Array.isArray(data) ? data : [];
+	}
 
 	return <UserListingPage users={users} />;
 }
