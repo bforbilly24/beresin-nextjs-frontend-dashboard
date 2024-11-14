@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgeCheck, Bell, ChevronRight, ChevronsUpDown, CreditCard, GalleryVerticalEnd, LogOut } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronRight, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,10 +16,11 @@ import { Icons } from '../icons';
 import SearchInput from '../search-input';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
+import { BrandIcon } from '../svgs/brand-icon';
 
 export const company = {
 	name: 'BeresIn Inc',
-	logo: GalleryVerticalEnd,
+	logo: BrandIcon,
 	plan: 'Enterprise',
 };
 
@@ -28,7 +29,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
 	const [mounted, setMounted] = React.useState(false);
 	const pathname = usePathname();
 
-	// Function to get initials from the name
 	const getInitials = (name: string) =>
 		name
 			.split(' ')
@@ -41,7 +41,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
 	}, []);
 
 	if (!mounted) {
-		return null; // or a loading skeleton
+		return null; 
 	}
 
 	return (
