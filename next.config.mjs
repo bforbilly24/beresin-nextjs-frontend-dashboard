@@ -1,8 +1,12 @@
-// next.config.mjs
 const nextConfig = {
 	images: {
 		remotePatterns: [
-			// Add your remote image patterns here if needed
+			{
+				protocol: 'http',
+				hostname: '178.128.21.130',
+				port: '3000',
+				pathname: '/services/uploads/images/**',
+			},
 		],
 	},
 	transpilePackages: ['geist'],
