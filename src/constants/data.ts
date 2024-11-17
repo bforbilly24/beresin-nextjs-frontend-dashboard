@@ -92,7 +92,6 @@ export const users: Users[] = [
 	},
 ];
 
-// src/constants/data.ts
 
 export type DataUser = {
 	id: number;
@@ -107,8 +106,8 @@ export type DataUser = {
 
 export type SortableField = keyof Pick<DataUser, 'id' | 'name' | 'role'>;
 
-export type Product = {
-	photo_url: string;
+export type Service = {
+	images: string;
 	name: string;
 	description: string;
 	created_at: string;
@@ -124,25 +123,25 @@ export const navItems: NavItem[] = [
 		url: '/dashboard/overview',
 		icon: 'dashboard',
 		isActive: false,
-		items: [], // Empty array as there are no child items for Dashboard
+		items: [], 
 	},
 	{
 		title: 'User',
 		url: '/dashboard/user',
 		icon: 'user',
 		isActive: false,
-		items: [], // No child items
+		items: [], 
 	},
 	{
-		title: 'Product',
-		url: '/dashboard/product',
-		icon: 'product',
+		title: 'Service',
+		url: '/dashboard/service',
+		icon: 'service',
 		isActive: false,
-		items: [], // No child items
+		items: [], 
 	},
 	{
 		title: 'Account',
-		url: '#', // Placeholder as there is no direct link for the parent
+		url: '#', 
 		icon: 'billing',
 		isActive: true,
 
@@ -164,6 +163,6 @@ export const navItems: NavItem[] = [
 		url: '/dashboard/kanban',
 		icon: 'kanban',
 		isActive: false,
-		items: [], // No child items
+		items: [],
 	},
 ];
