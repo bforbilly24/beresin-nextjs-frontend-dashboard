@@ -40,7 +40,7 @@ export const Icons = {
   logo: Command,
   login: LogIn,
   close: X,
-  product: LucideShoppingBag,
+  service: LucideShoppingBag,
   spinner: Loader2,
   kanban: CircuitBoardIcon,
   chevronLeft: ChevronLeft,
