@@ -1,8 +1,7 @@
-// src/app/dashboard/page.tsx
-import getServerSession from 'next-auth';
+import { Metadata } from 'next';
+import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import authConfig from '@/utils/auth.config';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
 	title: 'Dashboard : Overview',
@@ -12,13 +11,10 @@ export const metadata: Metadata = {
 export default async function Dashboard() {
 	const session = await getServerSession(authConfig);
 
-	// If no session, redirect to login
+	// Redirect based on session status
 	if (!session) {
-		redirect('/');
-		return null;
+		redirect('/'); // Redirect to login if no session
 	}
 
-	// Redirect to overview if session exists
-	redirect('/dashboard/overview');
-	return null;
+	redirect('/dashboard/overview'); // Redirect to dashboard overview if session exists
 }
