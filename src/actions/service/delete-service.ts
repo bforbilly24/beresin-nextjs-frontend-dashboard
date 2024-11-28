@@ -5,7 +5,6 @@ interface DeleteResponse {
 	message: string;
 }
 
-
 export async function deleteService(token: string, serviceId: number): Promise<DeleteResponse | null> {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	try {
