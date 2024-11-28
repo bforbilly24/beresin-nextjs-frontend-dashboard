@@ -106,17 +106,6 @@ export type DataUser = {
 
 export type SortableField = keyof Pick<DataUser, 'id' | 'name' | 'role'>;
 
-export type Service = {
-	images: string;
-	name: string;
-	description: string;
-	created_at: string;
-	price: number;
-	id: number;
-	category: string;
-	updated_at: string;
-};
-
 export const navItems: NavItem[] = [
 	{
 		title: 'Dashboard',
@@ -136,6 +125,13 @@ export const navItems: NavItem[] = [
 		title: 'Service',
 		url: '/dashboard/service',
 		icon: 'service',
+		isActive: false,
+		items: [], 
+	},
+	{
+		title: 'Subscription',
+		url: '/dashboard/subscription',
+		icon: 'subscription',
 		isActive: false,
 		items: [], 
 	},
