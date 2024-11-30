@@ -40,6 +40,7 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 	const [pageSize, setPageSize] = useState(10);
 	const isAllSelected = services.length > 0 && selectedServices.length === services.length;
 	const isSomeSelected = selectedServices.length > 0 && selectedServices.length < services.length;
+    const [updatingServiceId, setUpdatingServiceId] = useState<number | null>(null);
 
 	const columnAlias: Record<string, string> = {
 		category_id: 'CATEGORY',
@@ -72,7 +73,6 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 		setServices(newServices || []);
 	};
 
-	// Filtering logic
 	// Filter berdasarkan kategori yang terpilih
 	const filteredServices = useMemo(() => {
 		return services.filter((service) => {
@@ -328,8 +328,9 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 												serviceId={service.id}
 												sessionToken={sessionToken}
 												setServices={setServices}
-												fetchServices={fetchServices} // Pass the fetchServices function to refresh data
-											/>
+                                                fetchServices={fetchServices} 
+                                                setUpdatingServiceId={setUpdatingServiceId}											
+                                            />
 										</DropdownMenu>
 									</TableCell>
 								</TableRow>
