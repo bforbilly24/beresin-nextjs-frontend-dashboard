@@ -68,8 +68,7 @@ function DataTableViewOptions({ allColumnHeaders = [], visibleKeys, onViewOption
 							{allColumnHeaders.length > 0 ? (
 								allColumnHeaders.map((header) => (
 									<div key={header} className='flex items-center'>
-										<Checkbox checked={checkedState[header]} onCheckedChange={(isChecked) => handleCheckedChange(header, isChecked)} />
-										<span className='ml-2'>{header}</span>
+										<Checkbox checked={checkedState[header]} onCheckedChange={(isChecked) => handleCheckedChange(header, Boolean(isChecked))} /> <span className='ml-2'>{header}</span>
 									</div>
 								))
 							) : (
