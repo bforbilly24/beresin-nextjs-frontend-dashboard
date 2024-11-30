@@ -15,17 +15,16 @@ interface FilterCategoryProps {
 }
 
 const ServiceFilterCategory: React.FC<FilterCategoryProps> = ({ selectedCategory, onCategoryChange, categories }) => {
-	const [filterValue, setFilterValue] = useState<string | null>(null);
+	const [filterValue, setFilterValue] = useState<string | undefined>(undefined);
 
 	const handleCategoryChange = (categoryId: string | null) => {
 		onCategoryChange(categoryId);
 	};
 
 	const resetFilter = () => {
-		onCategoryChange(null); 
-		setFilterValue(null);
+		onCategoryChange(null);
+		setFilterValue(undefined); // Reset to undefined
 	};
-
 	return (
 		<div className='flex flex-row gap-x-2 items-center justify-start'>
 			<Popover>
