@@ -1,13 +1,12 @@
 'use client';
 
-import { Cross2Icon, EyeOpenIcon, ListBulletIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, ListBulletIcon } from '@radix-ui/react-icons';
 import { Ban, CheckCircle, Clock, MoreHorizontal, Trash2Icon } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { deleteService } from '@/actions/service/delete-service';
 import { getServices } from '@/actions/service/get-services';
 import { updateServiceStatus } from '@/actions/service/update-service-status';
-import { updateSubscription } from '@/actions/subscriptions/update-subscriptions-status';
 import { getUsers } from '@/actions/user/get-user';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -30,91 +29,86 @@ interface DataTableProps {
 const defaultVisibleKeys = ['name', 'images', 'name_of_service', 'description', 'category_id', 'like_count', 'bookmark_count', 'subscription', 'status'];
 
 const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessionToken }) => {
-const [services, setServices] = useState<Service[]>(initialServices);
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [users, setUsers] = useState<{ [key: number]: string }>({});
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filters, setFilters] = useState<{ category: string; subscription: string; boost_name: string }>({
-    category: '',
-    subscription: '',
-    boost_name: '',
-  });
-  const [currentPage, setCurrentPage] = useState(0);
-  const [visibleKeys, setVisibleKeys] = useState<string[]>(defaultVisibleKeys);
-  const [pageSize, setPageSize] = useState(10);
-  const isAllSelected = services.length > 0 && selectedServices.length === services.length;
-  const isSomeSelected = selectedServices.length > 0 && selectedServices.length < services.length;
-  const [updatingServiceId, setUpdatingServiceId] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubscription, setSelectedSubscription] = useState<boolean | null>(null);
-  const [selectedBoostName, setSelectedBoostName] = useState<string | null>(null);
-  const columnAlias: Record<string, string> = {
-    category_id: 'CATEGORY',
-    like_count: 'LIKE',
-    bookmark_count: 'BOOKMARK',
-};
+	const [services, setServices] = useState<Service[]>(initialServices);
+	const [selectedServices, setSelectedServices] = useState<number[]>([]);
+	const [users, setUsers] = useState<{ [key: number]: string }>({});
+	const [searchTerm, setSearchTerm] = useState<string>('');
+	const [filters, setFilters] = useState<{ category: string; subscription: string; boost_name: string }>({
+		category: '',
+		subscription: '',
+		boost_name: '',
+	});
+	const [currentPage, setCurrentPage] = useState(0);
+	const [visibleKeys, setVisibleKeys] = useState<string[]>(defaultVisibleKeys);
+	const [pageSize, setPageSize] = useState(10);
+	const isAllSelected = services.length > 0 && selectedServices.length === services.length;
+	const isSomeSelected = selectedServices.length > 0 && selectedServices.length < services.length;
+	const [updatingServiceId, setUpdatingServiceId] = useState<number | null>(null);
+	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+	const [selectedSubscription, setSelectedSubscription] = useState<boolean | null>(null);
+	const [selectedBoostName, setSelectedBoostName] = useState<string | null>(null);
+	const columnAlias: Record<string, string> = {
+		category_id: 'CATEGORY',
+		like_count: 'LIKE',
+		bookmark_count: 'BOOKMARK',
+	};
+	const checkboxRef = useRef<HTMLInputElement>(null);
 
-  // Fetch user data on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const usersData = await getUsers(sessionToken);
-      if (Array.isArray(usersData)) {
-        const usersMap = usersData.reduce(
-          (acc, user) => {
-            acc[user.id] = user.name;
-            return acc;
-          },
-          {} as { [key: number]: string },
-        );
-        setUsers(usersMap);
-      }
-    };
-    fetchUsers();
-  }, [sessionToken]);
+	useEffect(() => {
+		if (checkboxRef.current) {
+			checkboxRef.current.indeterminate = isSomeSelected;
+		}
+	}, [isSomeSelected]);
 
-  // Fetch services based on filters
-  useEffect(() => {
-    // console.log('Selected Category:', selectedCategory);
-    // console.log('Selected Subscription:', selectedSubscription);
-    // console.log('Selected Boost Name:', selectedBoostName);
-  
-    setFilters({
-        category: selectedCategory || '',
-        subscription: selectedSubscription !== null ? (selectedSubscription ? 'true' : 'false') : '',
-        boost_name: selectedBoostName || '', // Adding boost_name filter
-      });
-    }, [selectedCategory, selectedSubscription, selectedBoostName, setFilters]);
-  
-  
-    // Filter services based on category and search term
-    const filteredServices = useMemo(() => {
-        return services.filter((service) => {
-          const matchesSearchTerm = service.name_of_service.toLowerCase().includes(searchTerm.toLowerCase());
-      
-          // Category filter (if any)
-          const matchesCategory =
-            filters.category && typeof filters.category === 'string'
-              ? filters.category.split(',').includes(service.category_id.toString())
-              : true;
-      
-          // Subscription filter (if any)
-          const matchesSubscription =
-            filters.subscription && typeof filters.subscription === 'string'
-              ? (filters.subscription === 'true' && service.subscription?.isSubscription) ||
-                (filters.subscription === 'false' && !service.subscription?.isSubscription)
-              : true;
-      
-          // Boost Name filter (if any)
-          const matchesBoostName =
-            filters.boost_name && typeof filters.boost_name === 'string'
-              ? service.subscription?.boost_name === filters.boost_name
-              : true;
-      
-          return matchesSearchTerm && matchesCategory && matchesSubscription && matchesBoostName;
-        });
-      }, [services, searchTerm, filters]);
-      
-      
+	// Fetch user data on component mount
+	useEffect(() => {
+		const fetchUsers = async () => {
+			const usersData = await getUsers(sessionToken);
+			if (Array.isArray(usersData)) {
+				const usersMap = usersData.reduce(
+					(acc, user) => {
+						acc[user.id] = user.name;
+						return acc;
+					},
+					{} as { [key: number]: string },
+				);
+				setUsers(usersMap);
+			}
+		};
+		fetchUsers();
+	}, [sessionToken]);
+
+	// Fetch services based on filters
+	useEffect(() => {
+		// console.log('Selected Category:', selectedCategory);
+		// console.log('Selected Subscription:', selectedSubscription);
+		// console.log('Selected Boost Name:', selectedBoostName);
+
+		setFilters({
+			category: selectedCategory || '',
+			subscription: selectedSubscription !== null ? (selectedSubscription ? 'true' : 'false') : '',
+			boost_name: selectedBoostName || '', // Adding boost_name filter
+		});
+	}, [selectedCategory, selectedSubscription, selectedBoostName, setFilters]);
+
+	// Filter services based on category and search term
+	const filteredServices = useMemo(() => {
+		return services.filter((service) => {
+			const matchesSearchTerm = service.name_of_service.toLowerCase().includes(searchTerm.toLowerCase());
+
+			// Category filter (if any)
+			const matchesCategory = filters.category && typeof filters.category === 'string' ? filters.category.split(',').includes(service.category_id.toString()) : true;
+
+			// Subscription filter (if any)
+			const matchesSubscription = filters.subscription && typeof filters.subscription === 'string' ? (filters.subscription === 'true' && service.subscription?.isSubscription) || (filters.subscription === 'false' && !service.subscription?.isSubscription) : true;
+
+			// Boost Name filter (if any)
+			const matchesBoostName = filters.boost_name && typeof filters.boost_name === 'string' ? service.subscription?.boost_name === filters.boost_name : true;
+
+			return matchesSearchTerm && matchesCategory && matchesSubscription && matchesBoostName;
+		});
+	}, [services, searchTerm, filters]);
+
 	// Fetch user data on component mount
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -137,14 +131,15 @@ const [services, setServices] = useState<Service[]>(initialServices);
 	// Fetch services based on filters
 	const fetchServices = async () => {
 		const newServices = await getServices(sessionToken, undefined, { category_id: filters.category });
-		setServices(newServices || []);
+		setServices(Array.isArray(newServices) ? newServices : []); // Ensures newServices is always an array
 	};
-
 
 	useEffect(() => {
 		// Fetch services based on the filters
 		getServices(sessionToken, undefined, { category_id: filters.category }).then((newServices) => {
-			setServices(newServices || []);
+			// Ensure newServices is always an array
+			const servicesArray = Array.isArray(newServices) ? newServices : [newServices];
+			setServices(servicesArray.filter((service) => service !== null) as Service[]);
 		});
 	}, [filters, sessionToken]);
 
@@ -226,7 +221,15 @@ const [services, setServices] = useState<Service[]>(initialServices);
 				error={null}
 				allColumnHeaders={Object.keys(initialServices[0] || {})} // All columns available for view options
 				visibleKeys={visibleKeys}
-				onViewOptionChange={(header, isVisible) => setVisibleKeys((prevKeys) => (isVisible ? [...new Set([...prevKeys, header])] : prevKeys.filter((key) => key !== header)))}
+				onViewOptionChange={(header, isVisible) => {
+					setVisibleKeys((prevKeys) => {
+						if (isVisible) {
+							return prevKeys.includes(header) ? prevKeys : [...prevKeys, header];
+						} else {
+							return prevKeys.filter((key) => key !== header);
+						}
+					});
+				}}
 				onSortChange={() => {}}
 				sortColumn=''
 				sortOrder='asc'
@@ -281,7 +284,6 @@ const [services, setServices] = useState<Service[]>(initialServices);
 							<TableHead>
 								<Checkbox
 									checked={isAllSelected}
-									indeterminate={isSomeSelected}
 									onCheckedChange={() => {
 										if (isAllSelected) {
 											setSelectedServices([]); // Deselect all
@@ -291,6 +293,7 @@ const [services, setServices] = useState<Service[]>(initialServices);
 									}}
 								/>
 							</TableHead>
+
 							{visibleKeys.map((key) => (
 								<TableHead key={key}>{columnAlias[key] || key.replace(/_/g, ' ').toUpperCase()}</TableHead> // Display alias if available
 							))}
@@ -306,7 +309,7 @@ const [services, setServices] = useState<Service[]>(initialServices);
 									</TableCell>
 
 									{visibleKeys.map((key) => {
-										let value = service[key];
+										let value = service[key as keyof Service];
 
 										// Menyesuaikan value untuk kolom tertentu
 										if (key === 'subscription') {
@@ -411,7 +414,7 @@ const [services, setServices] = useState<Service[]>(initialServices);
 				}}
 				setPageSize={(size) => setPageSize(size)}
 				disabled={!services.length}
-                totalItems={filteredServices.length} 
+				totalItems={filteredServices.length}
 			/>
 		</div>
 	);
