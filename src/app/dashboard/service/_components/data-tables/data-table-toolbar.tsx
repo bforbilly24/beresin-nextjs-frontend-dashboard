@@ -34,7 +34,7 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
 	const [selectedSubscription, setSelectedSubscription] = useState<boolean | null>(null);
 	const [selectedBoostName, setSelectedBoostName] = useState<string | null>(null);
 
-	const boostNames = ['Standard Boost', 'Premium Boost', 'Ultimate Boost']; // Example boost names
+	const boostNames = ['Basic Boost', 'Standard Boost', 'Premium Boost']; // Example boost names
 
 	// Fetch categories on mount
 	useEffect(() => {
@@ -68,11 +68,20 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
 	};
 
 	const handleSubscriptionChange = (status: boolean | null) => {
+		// If the status is "not subscription" (false), reset the boost name filter
+		if (status === false) {
+			setSelectedBoostName(null); // Clear boost name when subscription is false
+		}
 		setSelectedSubscription(status);
 	};
 
 	const handleBoostNameChange = (boostName: string | null) => {
-		setSelectedBoostName(boostName);
+		// Only allow boost name to be set if subscription is true
+		if (selectedSubscription === true) {
+			setSelectedBoostName(boostName);
+		} else {
+			setSelectedBoostName(null); // Clear boost name if subscription is not true
+		}
 	};
 
 	return (
@@ -84,7 +93,15 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
 				<ServiceFilterCategory selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} categories={categories} />
 
 				{/* Menampilkan filter subscription */}
-				<ServiceFilterSubscription selectedSubscription={selectedSubscription} selectedBoostName={selectedBoostName} onSubscriptionChange={handleSubscriptionChange} onBoostNameChange={handleBoostNameChange} boostNames={boostNames} />
+				<ServiceFilterSubscription
+					selectedSubscription={selectedSubscription}
+					selectedBoostName={selectedBoostName}
+					onSubscriptionChange={handleSubscriptionChange}
+					onBoostNameChange={handleBoostNameChange}
+					boostNames={boostNames}
+					// Disable boost name selection if subscription is false
+					disableBoostName={selectedSubscription === false}
+				/>
 			</div>
 
 			<div className='flex gap-5 w-fit items-center justify-end'>
