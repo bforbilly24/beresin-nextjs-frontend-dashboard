@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Toaster } from '../ui/sonner';
+import { toast } from 'sonner';
+// Import toast function from sonner
 import Loader from './loader';
 
 function UnauthenticatedContent() {
@@ -13,10 +14,9 @@ function UnauthenticatedContent() {
 		router.push('/admin/auth/login');
 		router.refresh();
 
-		Toaster({
-			variant: 'error',
-			title: 'Gagal',
-			description: `Silakan login untuk mengakses '${pathname}'`,
+		// Show error toast using the correct API
+		toast.error(`Silakan login untuk mengakses '${pathname}'`, {
+			description: 'Gagal', // Use description instead of title
 		});
 
 		return () => {};
