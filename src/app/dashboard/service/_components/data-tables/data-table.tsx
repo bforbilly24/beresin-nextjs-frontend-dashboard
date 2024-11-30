@@ -30,24 +30,91 @@ interface DataTableProps {
 const defaultVisibleKeys = ['name', 'images', 'name_of_service', 'description', 'category_id', 'like_count', 'bookmark_count', 'subscription', 'status'];
 
 const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessionToken }) => {
-	const [services, setServices] = useState<Service[]>(initialServices);
-	const [selectedServices, setSelectedServices] = useState<number[]>([]);
-	const [users, setUsers] = useState<{ [key: number]: string }>({});
-	const [searchTerm, setSearchTerm] = useState<string>('');
-	const [filters, setFilters] = useState<{ category: string }>({ category: '' });
-	const [currentPage, setCurrentPage] = useState(0);
-	const [visibleKeys, setVisibleKeys] = useState<string[]>(defaultVisibleKeys);
-	const [pageSize, setPageSize] = useState(10);
-	const isAllSelected = services.length > 0 && selectedServices.length === services.length;
-	const isSomeSelected = selectedServices.length > 0 && selectedServices.length < services.length;
-    const [updatingServiceId, setUpdatingServiceId] = useState<number | null>(null);
+const [services, setServices] = useState<Service[]>(initialServices);
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [users, setUsers] = useState<{ [key: number]: string }>({});
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filters, setFilters] = useState<{ category: string; subscription: string; boost_name: string }>({
+    category: '',
+    subscription: '',
+    boost_name: '',
+  });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [visibleKeys, setVisibleKeys] = useState<string[]>(defaultVisibleKeys);
+  const [pageSize, setPageSize] = useState(10);
+  const isAllSelected = services.length > 0 && selectedServices.length === services.length;
+  const isSomeSelected = selectedServices.length > 0 && selectedServices.length < services.length;
+  const [updatingServiceId, setUpdatingServiceId] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSubscription, setSelectedSubscription] = useState<boolean | null>(null);
+  const [selectedBoostName, setSelectedBoostName] = useState<string | null>(null);
+  const columnAlias: Record<string, string> = {
+    category_id: 'CATEGORY',
+    like_count: 'LIKE',
+    bookmark_count: 'BOOKMARK',
+};
 
-	const columnAlias: Record<string, string> = {
-		category_id: 'CATEGORY',
-		like_count: 'LIKE',
-		bookmark_count: 'BOOKMARK',
-	};
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const usersData = await getUsers(sessionToken);
+      if (Array.isArray(usersData)) {
+        const usersMap = usersData.reduce(
+          (acc, user) => {
+            acc[user.id] = user.name;
+            return acc;
+          },
+          {} as { [key: number]: string },
+        );
+        setUsers(usersMap);
+      }
+    };
+    fetchUsers();
+  }, [sessionToken]);
 
+  // Fetch services based on filters
+  useEffect(() => {
+    // console.log('Selected Category:', selectedCategory);
+    // console.log('Selected Subscription:', selectedSubscription);
+    // console.log('Selected Boost Name:', selectedBoostName);
+  
+    setFilters({
+        category: selectedCategory || '',
+        subscription: selectedSubscription !== null ? (selectedSubscription ? 'true' : 'false') : '',
+        boost_name: selectedBoostName || '', // Adding boost_name filter
+      });
+    }, [selectedCategory, selectedSubscription, selectedBoostName, setFilters]);
+  
+  
+    // Filter services based on category and search term
+    const filteredServices = useMemo(() => {
+        return services.filter((service) => {
+          const matchesSearchTerm = service.name_of_service.toLowerCase().includes(searchTerm.toLowerCase());
+      
+          // Category filter (if any)
+          const matchesCategory =
+            filters.category && typeof filters.category === 'string'
+              ? filters.category.split(',').includes(service.category_id.toString())
+              : true;
+      
+          // Subscription filter (if any)
+          const matchesSubscription =
+            filters.subscription && typeof filters.subscription === 'string'
+              ? (filters.subscription === 'true' && service.subscription?.isSubscription) ||
+                (filters.subscription === 'false' && !service.subscription?.isSubscription)
+              : true;
+      
+          // Boost Name filter (if any)
+          const matchesBoostName =
+            filters.boost_name && typeof filters.boost_name === 'string'
+              ? service.subscription?.boost_name === filters.boost_name
+              : true;
+      
+          return matchesSearchTerm && matchesCategory && matchesSubscription && matchesBoostName;
+        });
+      }, [services, searchTerm, filters]);
+      
+      
 	// Fetch user data on component mount
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -73,14 +140,6 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 		setServices(newServices || []);
 	};
 
-	// Filter berdasarkan kategori yang terpilih
-	const filteredServices = useMemo(() => {
-		return services.filter((service) => {
-			const matchesSearchTerm = service.name_of_service.toLowerCase().includes(searchTerm.toLowerCase());
-			const matchesCategory = filters.category && typeof filters.category === 'string' ? filters.category.split(',').includes(service.category_id.toString()) : true;
-			return matchesSearchTerm && matchesCategory;
-		});
-	}, [services, searchTerm, filters.category]);
 
 	useEffect(() => {
 		// Fetch services based on the filters
@@ -90,7 +149,9 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 	}, [filters, sessionToken]);
 
 	// Pagination logic
-	const paginatedData = filteredServices.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+	const paginatedData = useMemo(() => {
+		return filteredServices.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+	}, [filteredServices, currentPage, pageSize]);
 
 	const handleUpdateStatus = async (serviceId: number, status: 'accept' | 'decline' | 'pending') => {
 		try {
@@ -324,20 +385,16 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 												</DropdownMenuItem>
 											</DropdownMenuContent>
 
-											<SubscriptionModal
-												serviceId={service.id}
-												sessionToken={sessionToken}
-												setServices={setServices}
-                                                fetchServices={fetchServices} 
-                                                setUpdatingServiceId={setUpdatingServiceId}											
-                                            />
+											<SubscriptionModal serviceId={service.id} sessionToken={sessionToken} setServices={setServices} fetchServices={fetchServices} setUpdatingServiceId={setUpdatingServiceId} />
 										</DropdownMenu>
 									</TableCell>
 								</TableRow>
 							))
 						) : (
 							<TableRow>
-								<TableCell colSpan={visibleKeys.length + 2}>No data available.</TableCell>
+								<TableCell colSpan={visibleKeys.length + 2} className='text-center'>
+									No data available.
+								</TableCell>
 							</TableRow>
 						)}
 					</TableBody>
@@ -354,6 +411,7 @@ const DataTable: React.FC<DataTableProps> = ({ services: initialServices, sessio
 				}}
 				setPageSize={(size) => setPageSize(size)}
 				disabled={!services.length}
+                totalItems={filteredServices.length} 
 			/>
 		</div>
 	);
