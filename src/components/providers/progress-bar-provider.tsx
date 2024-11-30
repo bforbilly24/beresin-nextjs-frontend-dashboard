@@ -1,11 +1,16 @@
 'use client';
 
+import { AppProgressBar as ProgressBarProviderWrapper } from 'next-nprogress-bar';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { PROTECTED_PAGES } from '@/constants/data';
-import { AppProgressBar as ProgressBarProviderWrapper } from 'next-nprogress-bar';
 
-function ProgressBarProvider({ children }) {
+// Type the 'children' prop as React.ReactNode
+interface ProgressBarProviderProps {
+	children: React.ReactNode;
+}
+
+function ProgressBarProvider({ children }: ProgressBarProviderProps) {
 	const pathName = usePathname();
 	const router = useRouter();
 	useEffect(() => {
