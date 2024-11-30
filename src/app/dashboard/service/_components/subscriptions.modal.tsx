@@ -12,7 +12,8 @@ interface SubscriptionModalProps {
 	serviceId: number;
 	sessionToken: string;
 	setServices: React.Dispatch<React.SetStateAction<Service[]>>;
-	fetchServices: () => void; // Function to refresh the services list
+	fetchServices: () => void; 
+	setUpdatingServiceId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ serviceId, sessionToken, setServices, fetchServices, setUpdatingServiceId }) => {
@@ -33,7 +34,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ serviceId, sessio
 		}
 
 		setLoading(true);
-		setUpdatingServiceId(serviceId); // Mark service as updating
+		setUpdatingServiceId(serviceId); 
 
 		try {
 			const response = await createSubscription(sessionToken, { service_id: serviceId, plan_id: selectedPlanId });
@@ -42,10 +43,8 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ serviceId, sessio
 				toast.success('Subscription added successfully!');
 				setIsDialogOpen(false);
 
-				// Update the service data locally
 				setServices((prevServices) => prevServices.map((service) => (service.id === serviceId ? { ...service, subscription: response.subscription } : service)));
 
-				// Refresh the services list after the subscription is added
 				fetchServices();
 			} else {
 				toast.error('Failed to create subscription.');
@@ -55,7 +54,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ serviceId, sessio
 			toast.error('Error creating subscription.');
 		} finally {
 			setLoading(false);
-			setUpdatingServiceId(null); // Reset the updating status
+			setUpdatingServiceId(null); 
 		}
 	};
 
