@@ -13,15 +13,32 @@ interface TablePaginationProps {
 		pageCount: number;
 	};
 	setPageSize: (size: number) => void;
+	totalItems: number; // Added to show total item count
 	disabled: boolean;
 }
 
-function DataTablePagination({ table, setPageSize, disabled }: TablePaginationProps) {
-	// Tambahkan default value agar tidak undefined
+function DataTablePagination({
+	table,
+	setPageSize,
+	disabled,
+	totalItems, // Accept totalItems to display the range
+}: TablePaginationProps) {
 	const { currentPage = 0, pageSize = 10, nextPage = () => {}, previousPage = () => {}, setPageIndex = () => {}, pageCount = 1 } = table || {};
 
+	const startItem = currentPage * pageSize + 1;
+	const endItem = Math.min((currentPage + 1) * pageSize, totalItems);
+
 	return (
-		<div className='flex items-center justify-end px-2'>
+		<div className='flex items-center justify-between px-2'>
+			<div className='flex-1 text-sm text-muted-foreground'>
+				{totalItems > 0 ? (
+					<>
+						Showing {startItem} to {endItem} of {totalItems} entries
+					</>
+				) : (
+					'No entries found'
+				)}
+			</div>
 			<div className='flex items-center space-x-6 lg:space-x-8'>
 				<div className='flex items-center space-x-2'>
 					<p className='text-sm font-medium'>Baris per halaman</p>
@@ -43,9 +60,8 @@ function DataTablePagination({ table, setPageSize, disabled }: TablePaginationPr
 						</SelectContent>
 					</Select>
 				</div>
-				<div className='flex w-fit items-center justify-center text-sm font-medium'>
-					Halaman {currentPage + 1} dari {pageCount}
-				</div>
+
+				{/* Pagination buttons */}
 				<Button variant='outline' className='hidden h-8 w-8 p-0 lg:flex' onClick={() => setPageIndex(0)} disabled={currentPage === 0 || disabled || pageCount === 0}>
 					<DoubleArrowLeftIcon className='h-4 w-4' />
 				</Button>
