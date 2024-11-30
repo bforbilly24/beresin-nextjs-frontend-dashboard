@@ -24,22 +24,20 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
   const [alertType, setAlertType] = useState<string>('error');
   const [alertMessage, setAlertMessage] = useState<string | object>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null); // Role selection state
+  const [selectedRole, setSelectedRole] = useState<string | null>(null); 
 
-  // Update filters when role changes
-  useEffect(() => {
+   // Update filters when role changes
+   useEffect(() => {
     setFilters({
-      role: selectedRole || '', // Empty string if no role selected
+      role: selectedRole || '', 
     });
   }, [selectedRole, setFilters]);
 
-  // Fetch data with the selected role filter
   useEffect(() => {
     fetchData({
-      role: selectedRole, // Only pass role to fetchData
+      role: selectedRole ?? undefined, 
     });
   }, [selectedRole, fetchData]);
-  
 
   const handleRoleChange = (role: string | null) => {
     setSelectedRole(role); // Set selected role, null for clear filter
