@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { PanelLeft } from 'lucide-react';
+import { useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
+import { BookContentIcon } from '../svgs/book-content.icon';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -265,6 +266,9 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar();
+  const [expandDuration, setExpandDuration] = useState('');
+  const [expand, setExpand] = useState(false);
+  const [expandLoading, setExpandLoading] = useState(false); // Track the expansion loading
 
   return (
     <Button
@@ -272,19 +276,32 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn('h-7 w-7', className)}
+      className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-center'
       onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
+        if (!expandLoading) {
+          setExpandDuration('duration-300');
+          setExpandLoading(true);
+          setExpand(!expand);
+
+          onClick?.(event);
+          toggleSidebar();
+
+          setTimeout(() => {
+            setExpandDuration('');
+            setExpandLoading(false);
+          }, 300);
+        }
       }}
       {...props}
     >
-      <PanelLeft />
+      <BookContentIcon className={`${expand ? `rotate-0 ${expandDuration}` : `rotate-180 ${expandDuration}`} -m-1 fill-foreground`} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
 });
+
 SidebarTrigger.displayName = 'SidebarTrigger';
+
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -359,7 +376,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn('flex flex-col gap-2 p-2', className)}
+      className={cn('flex flex-col gap-2 px-2 py-4', className)}
       {...props}
     />
   );
@@ -374,7 +391,7 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn('flex flex-col gap-2 p-2', className)}
+      className={cn('flex flex-col gap-2 px-2 py-4', className)}
       {...props}
     />
   );
