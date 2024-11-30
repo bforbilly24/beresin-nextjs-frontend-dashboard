@@ -1,5 +1,3 @@
-'use client'
-
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { SlidersHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -16,7 +14,7 @@ interface FilterRoleProps {
 }
 
 const UserFilterRole: React.FC<FilterRoleProps> = ({ selectedRole, onRoleChange }) => {
-	const [filterValue, setFilterValue] = useState<string | null>(null);
+	const [filterValue, setFilterValue] = useState<string | undefined>(undefined); // Change null to undefined
 
 	const roles = [
 		{ value: 'admin', label: 'Admin' },
@@ -29,7 +27,7 @@ const UserFilterRole: React.FC<FilterRoleProps> = ({ selectedRole, onRoleChange 
 
 	const resetFilter = () => {
 		onRoleChange(null);
-		setFilterValue(null);
+		setFilterValue(undefined); // Reset filterValue to undefined
 	};
 
 	return (
@@ -99,6 +97,5 @@ const UserFilterRole: React.FC<FilterRoleProps> = ({ selectedRole, onRoleChange 
 		</div>
 	);
 };
-
 
 export { UserFilterRole };
