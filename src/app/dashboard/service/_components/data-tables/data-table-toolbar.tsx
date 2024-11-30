@@ -30,7 +30,7 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
 	const [alertMessage, setAlertMessage] = useState<string | object>('');
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Single category selection state
-	const [categories, setCategories] = useState<{ id: string; name_of_category: string }[]>([]);
+	const [categories, setCategories] = useState<{ id: string; name_of_category: string }[]>([]); // Store categories as string ids
 	const [selectedSubscription, setSelectedSubscription] = useState<boolean | null>(null);
 	const [selectedBoostName, setSelectedBoostName] = useState<string | null>(null);
 
@@ -40,7 +40,12 @@ const DataTableToolbar: React.FC<DataTableToolbarProps> = ({ fetchData, searchTe
 	useEffect(() => {
 		const loadCategories = async () => {
 			const fetchedCategories = await getCategories();
-			setCategories(fetchedCategories); // Set categories to state
+			// Convert id to string for all categories
+			const categoriesWithStringId = fetchedCategories.map((category) => ({
+				...category,
+				id: category.id.toString(), // Ensure id is a string
+			}));
+			setCategories(categoriesWithStringId); // Set categories to state
 		};
 		loadCategories();
 	}, []);
