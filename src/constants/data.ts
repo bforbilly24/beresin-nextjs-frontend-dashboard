@@ -128,37 +128,39 @@ export const navItems: NavItem[] = [
 		isActive: false,
 		items: [], 
 	},
-	{
-		title: 'Subscription',
-		url: '/dashboard/subscription',
-		icon: 'subscription',
-		isActive: false,
-		items: [], 
-	},
-	{
-		title: 'Account',
-		url: '#', 
-		icon: 'billing',
-		isActive: true,
+	// {
+	// 	title: 'Subscription',
+	// 	url: '/dashboard/subscription',
+	// 	icon: 'subscription',
+	// 	isActive: false,
+	// 	items: [], 
+	// },
+	// {
+	// 	title: 'Account',
+	// 	url: '#', 
+	// 	icon: 'billing',
+	// 	isActive: true,
 
-		items: [
-			{
-				title: 'Profile',
-				url: '/dashboard/profile',
-				icon: 'userPen',
-			},
-			{
-				title: 'Login',
-				url: '/',
-				icon: 'login',
-			},
-		],
-	},
-	{
-		title: 'Kanban',
-		url: '/dashboard/kanban',
-		icon: 'kanban',
-		isActive: false,
-		items: [],
-	},
+	// 	items: [
+	// 		{
+	// 			title: 'Profile',
+	// 			url: '/dashboard/profile',
+	// 			icon: 'userPen',
+	// 		},
+	// 		{
+	// 			title: 'Login',
+	// 			url: '/',
+	// 			icon: 'login',
+	// 		},
+	// 	],
+	// },
+	// {
+	// 	title: 'Kanban',
+	// 	url: '/dashboard/kanban',
+	// 	icon: 'kanban',
+	// 	isActive: false,
+	// 	items: [],
+	// },
 ];
+
+export const PROTECTED_PAGES = ['/dashbord', '/dashboard/overview', '/dashboard/user', '/dashboard/service', '/dashboard/subscription', '/dashboard/profile'];
