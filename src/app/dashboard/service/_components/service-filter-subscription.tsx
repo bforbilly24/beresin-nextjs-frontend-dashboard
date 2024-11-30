@@ -16,6 +16,7 @@ interface FilterSubscriptionProps {
 	onSubscriptionChange: (status: boolean | null) => void;
 	onBoostNameChange: (boostName: string | null) => void;
 	boostNames: string[];
+    disableBoostName: boolean;
 }
 
 const ServiceFilterSubscription: React.FC<FilterSubscriptionProps> = ({ selectedSubscription, selectedBoostName, onSubscriptionChange, onBoostNameChange, boostNames }) => {
