@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { ServiceFilterCategory } from '../service-filter-category';
 import { ServiceFilterSubscription } from '../service-filter-subscription';
 import { DataTableViewOptions } from './data-table-view-options';
+import { Service } from '@/types/service';
 
 interface DataTableToolbarProps {
+    data: Service[];  
 	fetchData: (filters: { categoryIds: string[]; subscription?: string; boostName?: string }) => void;
 	searchTerm: string;
 	onSearchChange: (value: string) => void;
