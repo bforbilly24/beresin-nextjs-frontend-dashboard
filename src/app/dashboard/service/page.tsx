@@ -1,56 +1,66 @@
-import { Plus } from 'lucide-react';
-import { Metadata } from 'next';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { SearchParams } from 'nuqs/parsers';
-import { Suspense } from 'react';
-import PageContainer from '@/components/layout/page-container';
-import { buttonVariants } from '@/components/ui/button';
+import { getServices } from '@/actions/service/get-services';
+import { UnauthenticatedContent } from '@/components/miscellaneous/unauthenticated-content';
 import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { searchParamsCache, serialize } from '@/lib/searchparams';
-import { cn } from '@/lib/utils';
 import authConfig from '@/utils/auth.config';
-import ServiceTableAction from './_components/service-tables/service-table-action';
-import ServiceListingPage from './_components/service-listing';
+import DataTable from './_components/data-tables/data-table';
 
-export const metadata: Metadata = {
-	title: 'Dashboard: Services',
+export const metadata = {
+	title: 'Service Data',
 };
 
-type pageProps = {
-	searchParams: SearchParams;
-};
-
-export default async function Page({ searchParams }: pageProps) {
+export default async function ServicePage() {
 	const session = await getServerSession(authConfig);
 
 	if (!session) {
-		redirect('/');
-		return null;
+		return <UnauthenticatedContent />;
 	}
 
-	searchParamsCache.parse(searchParams);
+	let services = [];
+	let errorMessage = '';
 
-	const key = serialize({ ...searchParams });
+	try {
+		services = await getServices(session.accessToken);
+	} catch (error) {
+		console.error('Error fetching services:', error);
+		errorMessage = 'There was an error loading the service data. Please try again later.';
+	}
+
+	const totalServices = services.length; 
+
+	if (!services || errorMessage) {
+		return (
+			<div className='p-10 h-screen w-screen flex-1 flex-col gap-8 md:flex'>
+				<div className='flex flex-col justify-between gap-6 space-y-2'>
+					<Link href='/dashboard/overview' className='flex w-fit cursor-pointer items-center gap-5 text-primary focus:outline-none'>
+						<ArrowLeftIcon className='h-5 w-5' />
+						<div>Kembali ke beranda</div>
+					</Link>
+					<div>
+						<h2 className='text-2xl font-bold tracking-tight'>Data Jasa</h2>
+					</div>
+				</div>
+
+				<p>{errorMessage || 'No services available.'}</p>
+			</div>
+		);
+	}
 
 	return (
-		<PageContainer>
-			<div className='space-y-4'>
-				<div className='flex items-start justify-between'>
-					<Heading title='Services' description='Manage services (Server side table functionalities.)' />
-					<Link href='/dashboard/service/new' className={cn(buttonVariants(), 'text-xs md:text-sm')}>
-						<Plus className='mr-2 h-4 w-4' /> Add New
-					</Link>
+		<div className='p-10 h-screen w-full flex-1 flex-col gap-8 md:flex'>
+			<div className='flex flex-col justify-between gap-6 space-y-2'>
+				<Link href='/dashboard/overview' className='flex w-fit cursor-pointer items-center gap-5 text-primary focus:outline-none'>
+					<ArrowLeftIcon className='h-5 w-5' />
+					<div>Kembali ke beranda</div>
+				</Link>
+				<div>
+					<Heading title={`Data Jasa (${totalServices})`} description='Manage and view service data (Server-side table functionalities).' />
 				</div>
-				<Separator />
-				<ServiceTableAction />
-				<Suspense key={key} fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}>
-					<ServiceListingPage />
-				</Suspense>
 			</div>
-		</PageContainer>
+
+			<DataTable services={services} sessionToken={session.accessToken} />
+		</div>
 	);
 }
