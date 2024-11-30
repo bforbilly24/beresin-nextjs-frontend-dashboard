@@ -47,18 +47,28 @@ interface Action {
 
 export const reducer = (state: State, action: Action): State => {
 	switch (action.type) {
-		case 'ADD_TOAST':
+		case 'ADD_TOAST': {
+			if (!action.toast) {
+				return state; // If action.toast is undefined, return the current state.
+			}
+
 			return {
 				...state,
-				toasts: [action.toast, ...state.toasts].filter((toast) => toast !== undefined).slice(0, TOAST_LIMIT), // Ensure no undefined values
+				toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
 			};
+		}
 
-		case 'UPDATE_TOAST':
+		case 'UPDATE_TOAST': {
+			if (!action.toast) {
+				return state; // If action.toast is undefined, return the current state.
+			}
+
 			return {
 				...state,
-				toasts: state.toasts.map((t) => (t.id === action.toast?.id ? { ...t, ...action.toast } : t)).filter((toast) => toast !== undefined), // Ensure no undefined values
+				toasts: state.toasts.map((t) => (t.id === action.toast?.id ? { ...t, ...action.toast } : t)),
 			};
-
+		}
+        
 		case 'DISMISS_TOAST': {
 			const { toastId } = action;
 
@@ -72,16 +82,10 @@ export const reducer = (state: State, action: Action): State => {
 
 			return {
 				...state,
-				toasts: state.toasts.map((t) =>
-					t.id === toastId || toastId === undefined
-						? {
-								...t,
-								open: false,
-							}
-						: t,
-				),
+				toasts: state.toasts.map((t) => (t.id === toastId || toastId === undefined ? { ...t, open: false } : t)),
 			};
 		}
+
 		case 'REMOVE_TOAST':
 			if (action.toastId === undefined) {
 				return {
@@ -93,6 +97,7 @@ export const reducer = (state: State, action: Action): State => {
 				...state,
 				toasts: state.toasts.filter((t) => t.id !== action.toastId),
 			};
+
 		default:
 			return state;
 	}
@@ -118,29 +123,28 @@ function toast(props: Omit<Toast, 'id' | 'open' | 'onOpenChange'>): {
 	const id = genId();
 
 	const update = (props: Omit<Toast, 'id' | 'open' | 'onOpenChange'>) =>
-        dispatch({
-          type: 'UPDATE_TOAST',
-          toast: {
-            ...props,
-            id,
-            open: false, 
-          },
-        });
-      
-      const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
-      
-      dispatch({
-        type: 'ADD_TOAST',
-        toast: {
-          ...props,
-          id,
-          open: true, // Ensure 'open' is set to true when adding a new toast
-          onOpenChange: (open: boolean) => {
-            if (!open) dismiss();
-          },
-        },
-      });
-      
+		dispatch({
+			type: 'UPDATE_TOAST',
+			toast: {
+				...props,
+				id,
+				open: false, // Ensure 'open' is set to false when updating the toast
+			},
+		});
+
+	const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
+
+	dispatch({
+		type: 'ADD_TOAST',
+		toast: {
+			...props,
+			id,
+			open: true, // Ensure 'open' is set to true when adding a new toast
+			onOpenChange: (open: boolean) => {
+				if (!open) dismiss();
+			},
+		},
+	});
 
 	return {
 		id,
