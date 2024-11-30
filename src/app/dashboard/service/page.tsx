@@ -33,14 +33,12 @@ export default async function ServicePage() {
 	if (!services || errorMessage) {
 		return (
 			<div className='p-10 h-screen w-screen flex-1 flex-col gap-8 md:flex'>
-				<div className='flex flex-col justify-between gap-6 space-y-2'>
+				<div className='flex flex-col justify-between gap-y-5 space-y-2'>
 					<Link href='/dashboard/overview' className='flex w-fit cursor-pointer items-center gap-5 text-primary focus:outline-none'>
 						<ArrowLeftIcon className='h-5 w-5' />
-						<div>Kembali ke beranda</div>
+						<div>Back to Dashboard</div>
 					</Link>
-					<div>
-						<h2 className='text-2xl font-bold tracking-tight'>Data Jasa</h2>
-					</div>
+                        <Heading title='Service Data' description='Manage and view service data (Server-side table functionalities).' />
 				</div>
 
 				<p>{errorMessage || 'No services available.'}</p>
@@ -50,14 +48,12 @@ export default async function ServicePage() {
 
 	return (
 		<div className='p-10 h-screen w-full flex-1 flex-col gap-8 md:flex'>
-			<div className='flex flex-col justify-between gap-6 space-y-2'>
+			<div className='flex flex-col justify-between gap-y-5 space-y-2'>
 				<Link href='/dashboard/overview' className='flex w-fit cursor-pointer items-center gap-5 text-primary focus:outline-none'>
 					<ArrowLeftIcon className='h-5 w-5' />
-					<div>Kembali ke beranda</div>
-				</Link>
-				<div>
-					<Heading title={`Data Jasa (${totalServices})`} description='Manage and view service data (Server-side table functionalities).' />
-				</div>
+                    <div>Back to Dashboard</div>
+                    </Link>
+					<Heading title={`Service Data (${totalServices})`} description='Manage and view service data (Server-side table functionalities).' />
 			</div>
 
 			<DataTable services={services} sessionToken={session.accessToken} />
