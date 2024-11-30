@@ -77,18 +77,21 @@ function DataTableViewOptions({ allColumnHeaders = [], visibleKeys, onViewOption
 							)}
 						</div>
 					</DrawerHeader>
-					<DrawerFooter className='flex flex-col gap-y-4'>
+					<DrawerFooter className='flex flex-row gap-y-4'>
+						<DrawerClose asChild>
+							<Button variant={'secondary'} className='w-full'>
+								Cancel
+							</Button>
+						</DrawerClose>
 						<Button
 							onClick={() => {
 								applyChanges();
 								setDrawerOpen(false);
 							}}
+							className='w-full'
 						>
 							Apply
 						</Button>
-						<DrawerClose asChild>
-							<Button variant={'secondary'}>Cancel</Button>
-						</DrawerClose>
 					</DrawerFooter>
 				</DrawerContent>
 			</Drawer>
