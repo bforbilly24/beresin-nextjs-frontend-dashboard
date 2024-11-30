@@ -20,7 +20,7 @@ interface FilterSubscriptionProps {
 }
 
 const ServiceFilterSubscription: React.FC<FilterSubscriptionProps> = ({ selectedSubscription, selectedBoostName, onSubscriptionChange, onBoostNameChange, boostNames }) => {
-	const [filterValue, setFilterValue] = useState<string | null>(null);
+	const [filterValue, setFilterValue] = useState<string | undefined>(undefined);
 
 	const handleSubscriptionChange = (status: boolean | null) => {
 		onSubscriptionChange(status);
@@ -33,7 +33,7 @@ const ServiceFilterSubscription: React.FC<FilterSubscriptionProps> = ({ selected
 	const resetFilters = () => {
 		onSubscriptionChange(null);
 		onBoostNameChange(null); 
-		setFilterValue(null); 
+		setFilterValue(undefined); // Reset to undefined
 	};
 
 	return (
