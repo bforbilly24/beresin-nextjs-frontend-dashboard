@@ -8,6 +8,7 @@ import { NotReadyResponsive } from '@/components/miscellaneous/not-ready-respons
 import { ProgressBarProvider } from '@/components/providers/progress-bar-provider';
 import { Toaster } from '@/components/ui/sonner';
 import authConfig from '@/utils/auth.config';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -45,10 +46,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 				<Providers session={session}>
 					<ProgressBarProvider>
 						<Toaster />
-						<main className='xl:flex h-screen hidden'>{children}</main>
+						<main className='xl:flex h-screen hidden'>
+                            {children}</main>
 					</ProgressBarProvider>
 					<NotReadyResponsive />
 				</Providers>
+                <SpeedInsights />
 			</body>
 		</html>
 	);
