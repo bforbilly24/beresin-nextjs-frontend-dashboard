@@ -1,10 +1,11 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
 	images: {
 		remotePatterns: [
 			{
-				protocol: 'http',
-				hostname: '178.128.21.130',
-				port: '3000',
+				protocol: 'https', 
+				hostname: 'restapi.beresin.software',
+				port: '443', 
 				pathname: '/services/uploads/images/**',
 			},
 		],
