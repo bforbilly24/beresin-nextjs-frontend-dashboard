@@ -21,7 +21,7 @@ const authConfig: AuthOptions = {
 			async authorize(credentials) {
 				const loginResponse = await postLogin(credentials?.email || '', credentials?.password || '');
 
-				if (loginResponse?.user?.email === 'firstadmin@mail.com' && loginResponse?.user?.role === 'admin') {
+				if (loginResponse?.user?.email === 'admin@beresin.software' && loginResponse?.user?.role === 'admin') {
 					return {
 						id: loginResponse.user.id.toString(),
 						email: loginResponse.user.email,
