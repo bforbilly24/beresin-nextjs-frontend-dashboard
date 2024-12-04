@@ -28,7 +28,7 @@ export async function postLogin(email: string, password: string) {
 		if (
 			response.data.status === 'success' &&
 			response.data.user?.role === 'admin' &&
-			response.data.user?.email === 'firstadmin@mail.com'
+			response.data.user?.email === 'admin@beresin.software'
 		) {
 			return {
 				token: response.data.token || '',
